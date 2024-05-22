@@ -7,7 +7,10 @@ const Button = ({ onClick, text }) => (
 )
 
 const Statistic = ({ value }) => {
-  if (value === 0) {
+  const good = value[0]
+  const neutral = value[1]
+  const bad = value[2]
+  if ((good + neutral + bad) === 0) {
     return (
       <p>No feedback given</p>
     )
@@ -45,7 +48,7 @@ const App = () => {
       <Button onClick={() => setNeutral(neutral + 1)} text='Neutral' />
       <Button onClick={() => setBad(bad + 1)} text='Bad' />
       <h1>Statistics</h1>
-      <Statistic value={good + neutral + bad} />
+      <Statistic value={[good, neutral, bad]} />
     </div>
   )
 }
