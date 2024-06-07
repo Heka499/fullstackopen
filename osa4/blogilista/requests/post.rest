@@ -2,8 +2,9 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "Testi",
-  "author": "Testaaja",
-  "url": "http://testi.fi",
-  "likes": 0
+  "title": "Other blog",
+  "author": "Other author",
+  "url": "http://www.other.com",
+  "likes": 12,
+  "userId": "66631d9867a7e316378e0fa1"
 }
