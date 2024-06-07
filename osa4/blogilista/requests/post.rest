@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlaWtraSIsImlkIjoiNjY2MzFkOTg2N2E3ZTMxNjM3OGUwZmExIiwiaWF0IjoxNzE3Nzc0NzE1fQ.2uizQ5u0KH0Q8oPcbyDNEOAp1GX7sVUi4aLOJiLYScM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlaWtraSIsImlkIjoiNjY2MzFkOTg2N2E3ZTMxNjM3OGUwZmExIiwiaWF0IjoxNzE3Nzc1Nzg3fQ.tDVN_SvGF11G5OxGYz_svY8WYG9P0uKURg4j_EvM-Mc
 
 {
-  "title": "Authorization blog",
-  "author": "author",
-  "url": "http://www.auth.com",
-  "likes": 6
+  "title": "Token test blog",
+  "author": "token",
+  "url": "http://www.token.com",
+  "likes": 99
 }
