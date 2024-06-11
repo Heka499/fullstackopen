@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const app = require('../app')
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
+const { title } = require('node:process')
 const api = supertest(app)
 
 beforeEach(async () => {
@@ -37,6 +38,7 @@ test('a valid blog can be added', async () => {
     await api
         .post('/api/blogs')
         .send(newBlog)
+        .set('Authorization', `Bearer ${await helper.getToken()}`)
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
@@ -59,6 +61,7 @@ test('blog without likes property defaults to 0', async () => {
     await api
         .post('/api/blogs')
         .send(newBlog)
+        .set('Authorization', `Bearer ${await helper.getToken()}`)
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
@@ -78,6 +81,7 @@ test('blog without title or url is not added', async () => {
     await api
         .post('/api/blogs')
         .send(newBlog)
+        .set('Authorization', `Bearer ${await helper.getToken()}`)
         .expect(400)
 
     const response = await api.get('/api/blogs')
@@ -86,20 +90,33 @@ test('blog without title or url is not added', async () => {
 })
 
 test('a blog can be deleted', async () => {
+    const token = await helper.getToken()
     const blogsAtStart = await helper.blogsInDb()
-    const blogToDelete = blogsAtStart[0]
+    const newBlog = {
+        title: 'To delete',
+        author: 'Dleter',
+        url: 'http://www.delete.com',
+        likes: 10,
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const blogToDelete = await Blog.findOne({ title: 'To delete' })
 
     await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(204)
-
+        
     const blogsAtEnd = await helper.blogsInDb()
 
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
 
-    const titles = blogsAtEnd.map(blog => blog.title)
-
-    assert(!titles.includes(blogToDelete.title))
 })
 
 test('a blog can be updated', async () => {
@@ -113,6 +130,7 @@ test('a blog can be updated', async () => {
     await api
         .put(`/api/blogs/${blogToUpdate.id}`)
         .send(updatedBlog)
+        .set('Authorization', `Bearer ${await helper.getToken()}`)
         .expect(200)
 
     const blogsAtEnd = await helper.blogsInDb()
@@ -120,6 +138,28 @@ test('a blog can be updated', async () => {
     const titles = blogsAtEnd.map(blog => blog.title)
 
     assert(titles.includes('Updated blog'))
+})
+
+test('a blog is not added without token', async () => {
+    const newBlog = {
+        title: 'Test blog',
+        author: 'Test man',
+        url: 'http://www.test.com',
+        likes: 10,
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+
+    const titles = response.body.map(r => r.title)
+
+    assert.strictEqual(response.body.length, helper.initialBlogs.length)
+
 })
 
 after(async () => {
