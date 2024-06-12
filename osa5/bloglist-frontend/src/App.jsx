@@ -1,23 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const blogInitialState = {
-    title: '',
-    author: '',
-    url: ''
-  }
-  const [newBlog, setNewBlog] = useState(blogInitialState)
   const [errorMessage, setErrorMessage] = useState(null)
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -71,24 +68,11 @@ const App = () => {
     }, 5000)
   }
 
-const handleBlogChange = (event) => {
-  console.log(event.target.value)
-  setNewBlog({ ...newBlog, [event.target.name]: event.target.value})
-}
-
-const addBlog = (event) => {
-  event.preventDefault()
-  const blogObject = {
-    title: newBlog.title,
-    author: newBlog.author,
-    url: newBlog.url,
-  }
-
+const addBlog = (blogObject) => {
   blogService
     .create(blogObject)
     .then(returnedBlog => {
       setBlogs(blogs.concat(returnedBlog))
-      setNewBlog(blogInitialState)
       setErrorMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
       setTimeout(() => {
         setErrorMessage(null)
@@ -120,16 +104,14 @@ const addBlog = (event) => {
         <Notification message={errorMessage} />
         <p>{user.name} logged in</p>
         <button onClick={handleLogout}>logout</button>
-        <BlogForm
-          title={newBlog.title}
-          author={newBlog.author}
-          url={newBlog.url}
-          handleBlogChange={handleBlogChange}
-          addBlog={addBlog}
-        />
+        <Togglable buttonLabel='new blog' ref={blogFormRef}>
+          <BlogForm createBlog={addBlog} />
+        </Togglable>
+        <div>
           {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
+            <Blog key={blog.id} blog={blog} />
+          )}
+        </div>
       </div>
       }
     </div>
