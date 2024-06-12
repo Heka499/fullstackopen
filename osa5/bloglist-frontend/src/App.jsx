@@ -50,6 +50,10 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      setErrorMessage('Logged in')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     } catch (exception) {
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
@@ -61,6 +65,10 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
+    setErrorMessage('Logged out')
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
   }
 
 const handleBlogChange = (event) => {
@@ -81,20 +89,35 @@ const addBlog = (event) => {
     .then(returnedBlog => {
       setBlogs(blogs.concat(returnedBlog))
       setNewBlog(blogInitialState)
+      setErrorMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     })
+    .catch(error => {
+      setErrorMessage('Error adding blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+  })
 }
 
   return (
     <div>
-      {!user && <LoginForm
-        handleLogin={handleLogin}
-        username={username}
-        setUsername={setUsername}
-        password={password}
-        setPassword={setPassword}
-      />}
+      {!user && <div>
+        <h2>log in to application</h2>
+        <Notification message={errorMessage} />
+        <LoginForm
+          handleLogin={handleLogin}
+          username={username}
+          setUsername={setUsername}
+          password={password}
+          setPassword={setPassword}
+        />
+      </div>}
       {user && <div>
         <h2>blogs</h2>
+        <Notification message={errorMessage} />
         <p>{user.name} logged in</p>
         <button onClick={handleLogout}>logout</button>
         <BlogForm
