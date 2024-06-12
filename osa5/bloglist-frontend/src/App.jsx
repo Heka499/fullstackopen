@@ -86,6 +86,23 @@ const addBlog = (blogObject) => {
   })
 }
 
+const handleLike = (id) => {
+  const blog = blogs.find(b => b.id === id)
+  const changedBlog = { ...blog, likes: blog.likes + 1 }
+
+  blogService
+    .update(id, changedBlog)
+    .then(returnedBlog => {
+      setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+    })
+    .catch(error => {
+      setErrorMessage('Error updating blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    })
+}
+
   return (
     <div>
       {!user && <div>
@@ -109,7 +126,7 @@ const addBlog = (blogObject) => {
         </Togglable>
         <div>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} like={handleLike} />
           )}
         </div>
       </div>
