@@ -94,7 +94,6 @@ const handleLike = (id) => {
     .update(id, changedBlog)
     .then(returnedBlog => {
       setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
-      console.log('returnedBlog', returnedBlog)
     })
     .catch(error => {
       setErrorMessage('Error updating blog')
@@ -126,9 +125,11 @@ const handleLike = (id) => {
           <BlogForm createBlog={addBlog} />
         </Togglable>
         <div>
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} like={handleLike} />
-          )}
+          {blogs
+            .sort((a, b) => b.likes - a.likes) // Sort blogs based on likes
+            .map(blog =>
+              <Blog key={blog.id} blog={blog} like={handleLike} />
+            )}
         </div>
       </div>
       }
