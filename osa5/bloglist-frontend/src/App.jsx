@@ -94,6 +94,7 @@ const handleLike = (id) => {
     .update(id, changedBlog)
     .then(returnedBlog => {
       setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      console.log('returnedBlog', returnedBlog)
     })
     .catch(error => {
       setErrorMessage('Error updating blog')
