@@ -40,7 +40,7 @@ blogRouter.post('/', async (request, response) => {
 
   const savedBlog = await blog
     .save()
-    .then(result => result.populate('user', { username: 1, name: 1 }).execPopulate())
+    .then(result => result.populate('user', { username: 1, name: 1 }))
     
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
@@ -49,19 +49,23 @@ blogRouter.post('/', async (request, response) => {
 })
 
 blogRouter.delete('/:id', async (request, response) => {
-    const user = request.user
+  let token = request.headers.authorization
+  if (token && token.toLowerCase().startsWith('bearer ')) {
+    token = token.substring(7)
+  }
 
-    if (!user.id) {
-        return response.status(401).json({ error: 'token invalid' })
-    }
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+  if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+  }
 
-    const blog = await Blog.findById(request.params.id)
-    if (blog.user.toString() !== user.id) {
-        return response.status(401).json({ error: 'token invalid' })
-    } else {
-        await Blog.findByIdAndDelete(request.params.id)
-    }
-    response.status(204).end()
+  const blog = await Blog.findById(request.params.id)
+  if (blog.user.toString() !== decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+  } else {
+      await Blog.findByIdAndDelete(request.params.id)
+  }
+  response.status(204).end()
 })
 
 blogRouter.put('/:id', async (request, response) => {

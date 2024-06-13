@@ -103,6 +103,23 @@ const handleLike = (id) => {
     })
 }
 
+const handleRemove = (id) => {
+  if (window.confirm('Remove blog?')) {
+    blogService
+      .remove(id)
+      .then(() => {
+        setBlogs(blogs.filter(blog => blog.id !== id))
+      })
+      .catch(error => {
+        setErrorMessage('Error removing blog:', error.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
+  }
+}
+
+
   return (
     <div>
       {!user && <div>
@@ -128,7 +145,7 @@ const handleLike = (id) => {
           {blogs
             .sort((a, b) => b.likes - a.likes) // Sort blogs based on likes
             .map(blog =>
-              <Blog key={blog.id} blog={blog} like={handleLike} />
+              <Blog key={blog.id} blog={blog} user={user} like={handleLike} remove={handleRemove} />
             )}
         </div>
       </div>
