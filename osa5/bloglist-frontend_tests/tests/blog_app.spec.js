@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const exp = require('constants')
+const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
     beforeEach(async ({ page, request }) => {
@@ -23,19 +23,29 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.getByTestId('username').fill('testuser')
-      await page.getByTestId('password').fill('testpassword')
-      await page.click('button')
+      await loginWith(page, 'testuser', 'testpassword')
       
       await expect(page.getByText('Test User logged in')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-      await page.getByTestId('username').fill('testuser')
-      await page.getByTestId('password').fill('wrongpassword')
-      await page.click('button')
+      await loginWith(page, 'testuser', 'wrongpassword')
 
       await expect(page.getByText('Test User logged in')).not.toBeVisible()
     })  
+  })
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'testuser', 'testpassword')
+    })
+
+    test('A blog can be created', async ({ page }) => {
+      await createBlog(page, 'Test Title', 'Test Author', 'http://testurl.com')
+      
+      const blogList = await page.locator('.bloglist')
+      await expect(blogList).toContainText('Test Title')
+      await expect(blogList).toContainText('Test Author')
+    })
   })
 })

@@ -141,7 +141,7 @@ const handleRemove = (id) => {
         <Togglable buttonLabel='new blog' ref={blogFormRef}>
           <BlogForm createBlog={addBlog} />
         </Togglable>
-        <div>
+        <div className='bloglist'>
           {blogs
             .sort((a, b) => b.likes - a.likes) // Sort blogs based on likes
             .map(blog =>
