@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith, createBlog } = require('./helper')
+const { loginWith, createBlog, likeBlog } = require('./helper')
 
 describe('Blog app', () => {
     beforeEach(async ({ page, request }) => {
@@ -87,6 +87,39 @@ describe('Blog app', () => {
       await loginWith(page, 'testuser2', 'testpassword')
       await page.getByRole('button', { name: 'view' }).click()
       await expect(page.locator('.bloglist')).not.toContainText('remove')
+    })
+  })
+
+  describe('Blogs are ordered by likes', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'testuser', 'testpassword')
+
+      await createBlog(page, 'Test Title1', 'Test Author1', 'http://testurl.com')
+      await createBlog(page, 'Test Title2', 'Test Author2', 'http://testurl.com')
+      await createBlog(page, 'Test Title3', 'Test Author3', 'http://testurl.com')
+
+      await page.locator('p').filter({ hasText: 'Test Title3 by Test Author3' }).getByRole('button').click()
+      await likeBlog(page, 'Test Title3', 'Test Author3', 10)
+
+      
+      await page.locator('p').filter({ hasText: 'Test Title2 by Test Author2' }).getByRole('button').click()
+      await likeBlog(page, 'Test Title2', 'Test Author2', 5)
+
+      await page.locator('p').filter({ hasText: 'Test Title1 by Test Author1' }).getByRole('button').click()
+      await likeBlog(page, 'Test Title1', 'Test Author1', 3)
+    })
+
+    test('Blogs are ordered by likes', async ({ page }) => {
+        const initialLikes = await page.$$eval('.blog-likes', elements => elements.map(el => parseInt(el.textContent)))
+        
+        await page.click('.blog-view-button')
+        await page.click('.blog-like-button')
+        
+        const updatedLikes = await page.$$eval('.blog-likes', elements => elements.map(el => parseInt(el.textContent)))
+        
+        const isSorted = updatedLikes.every((likes, index) => likes >= initialLikes[index])
+        
+        expect(isSorted).toBeTruthy()
     })
   })
 })
