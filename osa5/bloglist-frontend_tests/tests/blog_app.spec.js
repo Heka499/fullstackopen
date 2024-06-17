@@ -9,8 +9,15 @@ describe('Blog app', () => {
             username: 'testuser',
             name: 'Test User',
             password: 'testpassword'
-        }
-    })
+          }
+        })
+        await request.post('/api/users', {
+          data: {
+            username: 'testuser2',
+            name: 'Test User2',
+            password: 'testpassword'
+          }
+        })
 
     await page.goto('/')
   })
@@ -65,6 +72,21 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'remove' }).click()
       
       await expect(page.locator('.bloglist')).not.toContainText('Test Title')
+    })
+  })
+
+  describe('User cant delete other users blog', () => {
+    beforeEach(async ({ page }) => {
+      
+      await loginWith(page, 'testuser', 'testpassword')
+    })
+
+    test('User cant delete other users blog', async ({ page }) => {
+      await createBlog(page, 'Test Title', 'Test Author', 'http://testurl.com')
+      await page.getByRole('button', { name: 'logout' }).click()
+      await loginWith(page, 'testuser2', 'testpassword')
+      await page.getByRole('button', { name: 'view' }).click()
+      await expect(page.locator('.bloglist')).not.toContainText('remove')
     })
   })
 })
