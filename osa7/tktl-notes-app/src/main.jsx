@@ -1,5 +1,7 @@
 import ReactDOM from 'react-dom/client'
 import { useState } from 'react'
+import { Container, Table, TableBody, TableCell, TableContainer, TableRow, Paper, TextField, Alert, AppBar, Toolbar, IconButton } from '@mui/material'
+import styled from 'styled-components'
 
 import {
   BrowserRouter as Router,
@@ -10,6 +12,35 @@ import {
   useNavigate,
   useMatch
 } from "react-router-dom"
+
+const Button = styled.button`
+  background: Bisque;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid Chocolate;
+  border-radius: 3px;
+`
+
+const Input = styled.input`
+  margin: 0.25em;
+`
+
+const Page = styled.div`
+  padding: 1em;
+  background: PapayaWhip;
+`
+
+const Navigation = styled.div`
+  background: BurlyWood;
+  padding: 1em;
+`
+
+const Footer = styled.div`
+  background: Chocolate;
+  padding: 1em;
+  margin-top: 1em;
+`
 
 const Home = () => (
   <div>
@@ -31,13 +62,22 @@ const Note = ({ note }) => {
 const Notes = ({ notes }) => (
   <div>
     <h2>Notes</h2>
-    <ul>
-      {notes.map(note =>
-        <li key={note.id}>
-          <Link to={`/notes/${note.id}`}>{note.content}</Link>
-        </li>
-      )}
-    </ul>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableBody>
+          {notes.map(note => (
+            <TableRow key={note.id}>
+              <TableCell>
+                <Link to={`/notes/${note.id}`}>{note.content}</Link>
+              </TableCell>
+              <TableCell>
+                {note.user}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   </div>
 )
 
@@ -66,12 +106,16 @@ const Login = (props) => {
       <h2>login</h2>
       <form onSubmit={onSubmit}>
         <div>
-          username: <input />
+          username:
+          <Input />  
         </div>
         <div>
-          password: <input type='password' />
+          passaword:
+          <Input type='password' />
         </div>
-        <button type="submit">login</button>
+        <div>
+          <Button type='submit' primary=''>login</Button>
+        </div>
       </form>
     </div>
   )
@@ -120,19 +164,25 @@ const App = () => {
     : null
 
   return (
-    <div>
+    <Page>
 
-      <div>{message}</div>
+      <div className='container'>
+        {(message &&
+          <Alert severity='success'>
+            {message}
+          </Alert>
+        )}
+      </div>
 
-      <div>
-        <Link style={padding} to="/">home</Link>
-        <Link style={padding} to="/notes">notes</Link>
-        <Link style={padding} to="/users">users</Link>
+      <Navigation>
+        <Link style={padding} to='/'>home</Link>
+        <Link style={padding} to='/notes'>notes</Link>
+        <Link style={padding} to='/users'>users</Link>
         {user
           ? <em>{user} logged in</em>
-          : <Link style={padding} to="/login">login</Link>
+          : <Link style={padding} to='/login'>login</Link>
         }
-      </div>
+      </Navigation>
 
       <Routes>
         <Route path="/notes/:id" element={<Note note={note} />} />
@@ -142,11 +192,11 @@ const App = () => {
         <Route path="/" element={<Home />} />
       </Routes>
 
-      <div>
+      <Footer>
         <br />
         <em>Note app, Department of Computer Science 2023</em>
-      </div>
-    </div>
+      </Footer>
+    </Page>
   )
 }
 
