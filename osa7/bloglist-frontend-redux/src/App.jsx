@@ -6,15 +6,17 @@ import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import { useDispatch } from "react-redux";
+import { notify } from "./reducers/notificationReducer";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
 
   const blogFormRef = useRef();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -44,25 +46,16 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-      setErrorMessage("Logged in");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(notify(`Welcome back ${user.name}`, 5));
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(notify("Wrong username or password", 5));
     }
   };
 
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBlogappUser");
     setUser(null);
-    setErrorMessage("Logged out");
-    setTimeout(() => {
-      setErrorMessage(null);
-    }, 5000);
+    dispatch(notify("Logged out", 5));
   };
 
   const addBlog = (blogObject) => {
@@ -70,18 +63,15 @@ const App = () => {
       .create(blogObject)
       .then((returnedBlog) => {
         setBlogs(blogs.concat(returnedBlog));
-        setErrorMessage(
-          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        dispatch(
+          notify(
+            `a new blog ${blogObject.title} by ${blogObject.author} added`,
+            5,
+          ),
         );
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
       })
       .catch((error) => {
-        setErrorMessage("Error adding blog");
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
+        dispatch(notify("Error adding blog", 5));
       });
   };
 
@@ -95,10 +85,7 @@ const App = () => {
         setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
       })
       .catch((error) => {
-        setErrorMessage("Error updating blog");
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
+        dispatch(notify("Error updating blog", 5));
       });
   };
 
@@ -110,10 +97,7 @@ const App = () => {
           setBlogs(blogs.filter((blog) => blog.id !== id));
         })
         .catch((error) => {
-          setErrorMessage("Error removing blog:", error.response.data.error);
-          setTimeout(() => {
-            setErrorMessage(null);
-          }, 5000);
+          dispatch(notify("Error removing blog", 5));
         });
     }
   };
@@ -123,7 +107,7 @@ const App = () => {
       {!user && (
         <div>
           <h2>log in to application</h2>
-          <Notification message={errorMessage} />
+          <Notification />
           <LoginForm
             handleLogin={handleLogin}
             username={username}
@@ -136,7 +120,7 @@ const App = () => {
       {user && (
         <div>
           <h2>blogs</h2>
-          <Notification message={errorMessage} />
+          <Notification />
           <p>{user.name} logged in</p>
           <button onClick={handleLogout}>logout</button>
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
