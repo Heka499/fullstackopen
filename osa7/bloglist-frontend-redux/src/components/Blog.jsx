@@ -1,7 +1,10 @@
+import { useDispatch } from "react-redux";
+import { likeBlog, deleteBlog } from "../reducers/blogReducer";
+import { notify } from "../reducers/notificationReducer";
 import { useState } from "react";
-import PropTypes from "prop-types";
 
-const Blog = ({ blog, like, user, remove }) => {
+const Blog = ({ blog, user }) => {
+  const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
 
   const blogStyle = {
@@ -16,12 +19,16 @@ const Blog = ({ blog, like, user, remove }) => {
     setVisible(!visible);
   };
 
-  const handleClick = () => {
-    like(blog.id);
+  const handleLike = () => {
+    dispatch(likeBlog(blog));
+    dispatch(notify(`You liked '${blog.title}'`, 5));
   };
 
   const handleRemove = () => {
-    remove(blog.id);
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      dispatch(deleteBlog(blog));
+      dispatch(notify(`You removed '${blog.title}'`, 5));
+    }
   };
 
   if (!visible) {
@@ -45,7 +52,7 @@ const Blog = ({ blog, like, user, remove }) => {
         <p>Link: {blog.url}</p>
         <p>
           Likes: {blog.likes}{" "}
-          <button className="blog-like-button" onClick={handleClick}>
+          <button className="blog-like-button" onClick={handleLike}>
             Like
           </button>{" "}
         </p>
@@ -56,13 +63,6 @@ const Blog = ({ blog, like, user, remove }) => {
       </div>
     );
   }
-};
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  like: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
-  remove: PropTypes.func.isRequired,
 };
 
 export default Blog;
