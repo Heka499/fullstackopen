@@ -1,45 +1,55 @@
-import PropTypes from "prop-types";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../reducers/userReducer";
+import { notify } from "../reducers/notificationReducer";
 
-const LoginForm = ({
-  handleLogin,
-  username,
-  setUsername,
-  password,
-  setPassword,
-}) => {
+const LoginForm = () => {
+  const dispatch = useDispatch();
+  const credentialsInitialState = {
+    username: "",
+    password: "",
+  };
+  const [credentials, setCredentials] = useState(credentialsInitialState);
+
+  const handleCredentialsChange = (event) => {
+    setCredentials({
+      ...credentials,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    dispatch(loginUser(credentials));
+    dispatch(notify(`Welcome back ${credentials.username}`, 5));
+    setCredentials(credentialsInitialState);
+  };
+
   return (
     <form onSubmit={handleLogin}>
       <div>
         username
         <input
+          value={credentials.username}
+          onChange={handleCredentialsChange}
           data-testid="username"
           type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
+          name="username"
         />
       </div>
       <div>
         password
         <input
+          value={credentials.password}
+          onChange={handleCredentialsChange}
           data-testid="password"
           type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
+          name="password"
         />
       </div>
       <button type="submit">login</button>
     </form>
   );
-};
-
-LoginForm.propTypes = {
-  handleLogin: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
-  setUsername: PropTypes.func.isRequired,
-  password: PropTypes.string.isRequired,
-  setPassword: PropTypes.func.isRequired,
 };
 
 export default LoginForm;
