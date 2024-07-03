@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../reducers/userReducer";
-import { notify } from "../reducers/notificationReducer";
 import { useNotificationDispatch } from "../context/NotificationContext";
+import { useUserDispatch } from "../context/UserContext";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
+  const userDispatch = useUserDispatch();
   const notificationDispatch = useNotificationDispatch();
   const credentialsInitialState = {
     username: "",
@@ -22,8 +23,8 @@ const LoginForm = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    dispatch(loginUser(credentials));
-    useNotificationDispatch({
+    userDispatch({ type: "SET_USER", data: credentials });
+    notificationDispatch({
       type: "SET_NOTIFICATION",
       data: `Welcome back ${credentials.username}`,
     });

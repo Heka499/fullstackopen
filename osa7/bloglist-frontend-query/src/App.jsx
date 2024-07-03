@@ -6,7 +6,6 @@ import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import BlogList from "./components/BlogList";
 import { useDispatch, useSelector } from "react-redux";
-import { initializeBlogs } from "./reducers/blogReducer";
 import { setUser, logoutUser } from "./reducers/userReducer";
 import { useNotificationDispatch } from "./context/NotificationContext";
 
@@ -15,10 +14,6 @@ const App = () => {
   const blogFormRef = useRef();
   const dispatch = useDispatch();
   const notificationDispatch = useNotificationDispatch();
-
-  useEffect(() => {
-    dispatch(initializeBlogs());
-  }, []);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
