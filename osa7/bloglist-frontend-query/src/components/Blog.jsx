@@ -1,10 +1,10 @@
-import { useDispatch } from "react-redux";
-import { likeBlog, deleteBlog } from "../reducers/blogReducer";
 import { useState } from "react";
 import { useNotificationDispatch } from "../context/NotificationContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import blogService from "../services/blogs";
 
 const Blog = ({ blog, user }) => {
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const notificationDispatch = useNotificationDispatch();
   const [visible, setVisible] = useState(false);
 
@@ -16,21 +16,35 @@ const Blog = ({ blog, user }) => {
     marginBottom: 5,
   };
 
+  const updateBlogMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: () => {
+      queryClient.invalidateQueries("blogs");
+    },
+  });
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.remove,
+    onSuccess: () => {
+      queryClient.invalidateQueries("blogs");
+    },
+  });
+
   const toggleVisibility = () => {
     setVisible(!visible);
   };
 
-  const handleLike = () => {
-    dispatch(likeBlog(blog));
+  const handleLike = (blog) => {
+    updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 });
     notificationDispatch({
       type: "SET_NOTIFICATION",
       data: `You liked '${blog.title}'`,
     });
   };
 
-  const handleRemove = () => {
+  const handleRemove = (id) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      dispatch(deleteBlog(blog));
+      deleteBlogMutation.mutate(id);
       notificationDispatch({
         type: "SET_NOTIFICATION",
         data: `You removed '${blog.title}'`,
@@ -59,13 +73,13 @@ const Blog = ({ blog, user }) => {
         <p>Link: {blog.url}</p>
         <p>
           Likes: {blog.likes}{" "}
-          <button className="blog-like-button" onClick={handleLike}>
+          <button className="blog-like-button" onClick={() => handleLike(blog)}>
             Like
           </button>{" "}
         </p>
         <p>Added by: {blog.user.name}</p>
         {user.username === blog.user.username && (
-          <button onClick={handleRemove}>Remove</button>
+          <button onClick={() => handleRemove(blog.id)}>Remove</button>
         )}
       </div>
     );
