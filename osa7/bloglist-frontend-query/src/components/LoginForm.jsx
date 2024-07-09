@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { loginUser } from "../reducers/userReducer";
 import { useNotificationDispatch } from "../context/NotificationContext";
 import { useUserDispatch } from "../context/UserContext";
+import loginService from "../services/login";
+import blogService from "../services/blogs";
 
 const LoginForm = () => {
-  const dispatch = useDispatch();
   const userDispatch = useUserDispatch();
   const notificationDispatch = useNotificationDispatch();
   const credentialsInitialState = {
@@ -23,10 +22,13 @@ const LoginForm = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    userDispatch({ type: "SET_USER", data: credentials });
+    const user = await loginService.login(credentials);
+    console.log("user", user);
+    userDispatch({ type: "SET_USER", data: user });
+    blogService.setToken(user.token);
     notificationDispatch({
       type: "SET_NOTIFICATION",
-      data: `Welcome back ${credentials.username}`,
+      data: `Welcome back ${user.name}`,
     });
     setCredentials(credentialsInitialState);
   };

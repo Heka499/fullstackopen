@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNotificationDispatch } from "../context/NotificationContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import blogService from "../services/blogs";
 
 const BlogForm = () => {
   const queryClient = useQueryClient();
-  const dispatch = useDispatch();
   const notificationDispatch = useNotificationDispatch();
   const blogInitialState = {
     title: "",
@@ -28,6 +26,7 @@ const BlogForm = () => {
 
   const addBlog = async (event) => {
     event.preventDefault();
+    console.log("newBlog", newBlog);
     newBlogMutation.mutate(newBlog);
     notificationDispatch({
       type: "SET_NOTIFICATION",

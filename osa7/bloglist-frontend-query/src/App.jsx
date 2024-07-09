@@ -5,27 +5,25 @@ import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import BlogList from "./components/BlogList";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser, logoutUser } from "./reducers/userReducer";
 import { useNotificationDispatch } from "./context/NotificationContext";
+import { useUserValue, useUserDispatch } from "./context/UserContext";
 
 const App = () => {
-  const user = useSelector((state) => state.user);
+  const user = useUserValue();
   const blogFormRef = useRef();
-  const dispatch = useDispatch();
   const notificationDispatch = useNotificationDispatch();
+  const userDispatch = useUserDispatch();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      dispatch(setUser(user));
-      blogService.setToken(user.token);
+      userDispatch({ type: "SET_USER", data: JSON.parse(loggedUserJSON) });
+      blogService.setToken(JSON.parse(loggedUserJSON).token);
     }
   }, []);
 
   const handleLogout = () => {
-    dispatch(logoutUser());
+    userDispatch({ type: "CLEAR_USER" });
     notificationDispatch({ type: "SET_NOTIFICATION", data: "logged out" });
   };
 
