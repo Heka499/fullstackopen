@@ -6,19 +6,12 @@ import Notification from "./Notification";
 import Togglable from "./Togglable";
 import BlogList from "./BlogList";
 import { useDispatch, useSelector } from "react-redux";
-import { initializeBlogs } from "../reducers/blogReducer";
 import { setUser } from "../reducers/userReducer";
-import { initializeUsers } from "../reducers/usersReducer";
 
 const Home = () => {
   const user = useSelector((state) => state.user);
   const blogFormRef = useRef();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(initializeBlogs());
-    dispatch(initializeUsers());
-  }, []);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -44,7 +37,7 @@ const Home = () => {
             <BlogForm />
           </Togglable>
           <div className="bloglist">
-            <BlogList user={user} />
+            <BlogList />
           </div>
         </div>
       )}
