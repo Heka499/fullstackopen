@@ -7,9 +7,9 @@ import Users from "./components/Users";
 import User from "./components/User";
 import Blog from "./components/Blog";
 import { useDispatch, useSelector } from "react-redux";
-import { notify } from "./reducers/notificationReducer";
-import { setUser, logoutUser } from "./reducers/userReducer";
-import { Route, Routes, Link } from "react-router-dom";
+import { setUser } from "./reducers/userReducer";
+import { Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
 
 const App = () => {
   const user = useSelector((state) => state.user);
@@ -24,39 +24,31 @@ const App = () => {
     }
   }, []);
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
-    dispatch(notify("Logged out", 5));
-  };
+  if (!user) {
+    return (
+      <div>
+        <Navbar />
+        <h2>log in to application</h2>
+        <Notification />
+        <LoginForm />
+      </div>
+    );
+  }
 
   return (
     <div>
-      {!user && (
-        <div>
-          <h2>log in to application</h2>
-          <Notification />
-          <LoginForm />
-        </div>
-      )}
-      {user && (
-        <div>
-          <h2>blogs</h2>
-          <Notification />
-          <p>{user.name} logged in</p>
-          <button onClick={handleLogout}>logout</button>
-
-          <div>
-            <Link to="/">blogs</Link>
-            <Link to="/users">users</Link>
-          </div>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/users/:id" element={<User />} />
-            <Route path="/blogs/:id" element={<Blog />} />
-          </Routes>
-        </div>
-      )}
+      <Navbar />
+      <div>
+        <h2>blogs</h2>
+        <Notification />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/blogs/:id" element={<Blog />} />
+          <Route path="/login" element={<LoginForm />} />
+        </Routes>
+      </div>
     </div>
   );
 };
