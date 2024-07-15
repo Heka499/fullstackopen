@@ -4,6 +4,7 @@ import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import Home from "./components/Home";
 import Users from "./components/Users";
+import User from "./components/User";
 import { useDispatch, useSelector } from "react-redux";
 import { notify } from "./reducers/notificationReducer";
 import { setUser, logoutUser } from "./reducers/userReducer";
@@ -50,6 +51,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/users/:id" element={<User />} />
           </Routes>
         </div>
       )}
