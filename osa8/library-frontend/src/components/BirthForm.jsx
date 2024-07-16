@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@apollo/client";
-
 import { EDIT_AUTHOR } from "../queries";
+import Select from "react-select";
 
-const BirthForm = () => {
-  const [name, setName] = useState("");
+const BirthForm = ({ authors }) => {
+  const [name, setName] = useState(null);
   const [born, setBorn] = useState("");
 
   const [editAuthor, result] = useMutation(EDIT_AUTHOR);
@@ -12,9 +12,9 @@ const BirthForm = () => {
   const submit = async (event) => {
     event.preventDefault();
 
-    editAuthor({ variables: { name, setBornTo: +born } });
+    editAuthor({ variables: { name: name.value, setBornTo: +born } });
 
-    setName("");
+    setName(null);
     setBorn("");
   };
 
@@ -30,10 +30,10 @@ const BirthForm = () => {
 
       <form onSubmit={submit}>
         <div>
-          name{" "}
-          <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
+          <Select
+            defaultValue={name}
+            onChange={setName}
+            options={authors.map((a) => ({ value: a.name, label: a.name }))}
           />
         </div>
         <div>
@@ -43,7 +43,9 @@ const BirthForm = () => {
             onChange={({ target }) => setBorn(target.value)}
           />
         </div>
-        <button type="submit">update author</button>
+        <button type="submit" disabled={!name}>
+          update author
+        </button>
       </form>
     </div>
   );
