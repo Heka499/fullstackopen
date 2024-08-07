@@ -37,7 +37,7 @@ export const calculateExercises = (hours: number[], target: number): Result => {
     average < target - 1 ? 1 : average < target ? 2 : average > target ? 3 : 0;
   const ratingDescription =
     rating === 1
-      ? "You need to try harded"
+      ? "You need to try harder"
       : rating === 2
       ? "Not too bad but could be better"
       : "Well done!";

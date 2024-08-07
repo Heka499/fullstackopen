@@ -10,8 +10,10 @@ app.get("/ping", (_req, res) => {
 
 app.post("/calculate", (req, res) => {
   const { value1, value2, op } = req.body;
+  console.log(req.body);
 
   if (!value1 || isNaN(Number(value1))) {
+    console.log(value1);
     return res.status(400).send({ error: "..." });
   }
 

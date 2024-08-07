@@ -3,6 +3,8 @@ const app = express();
 import calculateBmi from "./bmiCalculator";
 import { calculateExercises, ExerciseValues } from "./exerciseCalculator";
 
+app.use(express.json());
+
 app.get("/hello", (_req, res) => {
   res.send("Hello Full Stack!");
 });
@@ -22,6 +24,7 @@ app.get("/bmi", (req, res) => {
 
 app.post("/exercises", (req, res) => {
   const { daily_exercises, target } = req.body;
+  console.log(req.body);
 
   if (!daily_exercises || !target) {
     res.json({ error: "parameters missing" });
