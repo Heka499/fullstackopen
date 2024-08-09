@@ -1,25 +1,39 @@
-interface ContentProps {
-  parts: PartProps[];
-}
+import { CoursePart } from "../App";
 
-interface PartProps {
-  name: string;
-  exerciseCount: number;
-}
-
-const Part = (props: PartProps) => {
-  return (
-    <p>
-      {props.name} {props.exerciseCount}
-    </p>
-  );
+const Part = (props: CoursePart) => {
+  console.log("Part", props);
+  switch (props.kind) {
+    case "basic":
+      return (
+        <p>
+          {props.name} {props.description} {props.exerciseCount}
+        </p>
+      );
+    case "group":
+      return (
+        <p>
+          {props.name} {props.exerciseCount} {props.groupProjectCount}
+        </p>
+      );
+    case "background":
+      return (
+        <p>
+          {props.name} {props.description} {props.backgroundMaterial}{" "}
+          {props.exerciseCount}
+        </p>
+      );
+    default:
+      throw new Error("This should not happen");
+  }
 };
 
-const Content = (props: ContentProps) => {
+const Content = (props: CoursePart[]) => {
+  console.log(props);
+
   return (
     <div>
-      {props.parts.map((part, i) => (
-        <Part key={i} name={part.name} exerciseCount={part.exerciseCount} />
+      {props.map((part) => (
+        <Part key={part.name} {...part} />
       ))}
     </div>
   );
