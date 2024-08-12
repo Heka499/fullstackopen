@@ -6,20 +6,35 @@ const Part = (props: CoursePart) => {
     case "basic":
       return (
         <p>
-          {props.name} {props.description} {props.exerciseCount}
+          {props.name} {props.exerciseCount}
+          <br />
+          {props.description}
         </p>
       );
     case "group":
       return (
         <p>
-          {props.name} {props.exerciseCount} {props.groupProjectCount}
+          {props.name} {props.exerciseCount}
+          <br />
+          project exercises {props.groupProjectCount}
         </p>
       );
     case "background":
       return (
         <p>
-          {props.name} {props.description} {props.backgroundMaterial}{" "}
-          {props.exerciseCount}
+          {props.name} {props.exerciseCount}
+          <br />
+          {props.description}
+          <br />
+          {props.backgroundMaterial}{" "}
+        </p>
+      );
+    case "special":
+      return (
+        <p>
+          {props.name} {props.exerciseCount} <br />
+          {props.description}
+          <div>required skills: {props.requirements.join(", ")}</div>
         </p>
       );
     default:
@@ -27,12 +42,16 @@ const Part = (props: CoursePart) => {
   }
 };
 
-const Content = (props: CoursePart[]) => {
-  console.log(props);
+interface ContentProps {
+  courseParts: CoursePart[];
+}
+
+const Content = ({ courseParts }: ContentProps) => {
+  console.log(courseParts);
 
   return (
     <div>
-      {props.map((part) => (
+      {courseParts.map((part) => (
         <Part key={part.name} {...part} />
       ))}
     </div>
