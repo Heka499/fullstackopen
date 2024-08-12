@@ -1,23 +1,22 @@
-import { useState } from "react";
-
-interface Note {
-  id: string;
-  content: string;
-}
+import { useState, useEffect } from "react";
+import { getAllNotes, createNote } from "./services/noteService";
+import { Note } from "./types";
 
 const App = () => {
   const [newNote, setNewNote] = useState("");
-  const [notes, setNotes] = useState<Note[]>([
-    { id: "1", content: "test note" },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
+
+  useEffect(() => {
+    getAllNotes().then((data) => {
+      setNotes(data);
+    });
+  }, []);
 
   const addNote = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    const noteToAdd = {
-      content: newNote,
-      id: String(notes.length + 1),
-    };
-    setNotes(notes.concat(noteToAdd));
+    createNote({ content: newNote }).then((data) => {
+      setNotes(notes.concat(data));
+    });
     setNewNote("");
   };
 
