@@ -7,8 +7,8 @@ const App = () => {
   const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
   const [error, setError] = useState("");
   const [date, setDate] = useState("");
-  const [visibility, setVisibility] = useState("");
-  const [weather, setWeather] = useState("");
+  const [visibility, setVisibility] = useState<Visibility>(Visibility.Great);
+  const [weather, setWeather] = useState<Weather>(Weather.Sunny);
   const [comment, setComment] = useState("");
 
   useEffect(() => {
@@ -24,6 +24,14 @@ const App = () => {
     }, 5000);
   };
 
+  const onVisibilityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setVisibility(event.target.value as Visibility);
+  };
+
+  const onWeatherChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setWeather(event.target.value as Weather);
+  };
+
   const addDiary = (event: React.SyntheticEvent) => {
     event.preventDefault();
     createDiary({ date, visibility, weather, comment }).then((data) => {
@@ -35,8 +43,8 @@ const App = () => {
       }
     });
     setDate("");
-    setVisibility("");
-    setWeather("");
+    setVisibility(Visibility.Great);
+    setWeather(Weather.Sunny);
     setComment("");
   };
 
@@ -45,21 +53,42 @@ const App = () => {
       <h1>Flight Diaries</h1>
       {error && <div style={{ color: "red" }}>{error}</div>}
       <form onSubmit={addDiary}>
+        <label>Date</label>
         <input
+          type="date"
           value={date}
           onChange={(event) => setDate(event.target.value)}
           placeholder="Date"
         />
-        <input
-          value={visibility}
-          onChange={(event) => setVisibility(event.target.value)}
-          placeholder="Visibility"
-        />
-        <input
-          value={weather}
-          onChange={(event) => setWeather(event.target.value)}
-          placeholder="Weather"
-        />
+        <fieldset>
+          <legend>Visibility</legend>
+          {Object.values(Visibility).map((visibility) => (
+            <label key={visibility}>
+              <input
+                type="radio"
+                name="visibility"
+                value={visibility}
+                onChange={onVisibilityChange}
+              />
+              {visibility}
+            </label>
+          ))}
+        </fieldset>
+        <fieldset>
+          <legend>Weather</legend>
+          {Object.values(Weather).map((weather) => (
+            <label key={weather}>
+              <input
+                type="radio"
+                name="weather"
+                value={weather}
+                onChange={onWeatherChange}
+              />
+              {weather}
+            </label>
+          ))}
+        </fieldset>
+        <label>Comment</label>
         <input
           value={comment}
           onChange={(event) => setComment(event.target.value)}
