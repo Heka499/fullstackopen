@@ -10,5 +10,14 @@ export const getAllDiaries = () => {
 export const createDiary = (object: NewDiaryEntry) => {
   return axios
     .post<DiaryEntry>(baseUrl, object)
-    .then((response) => response.data);
+    .then((response) => response.data)
+    .catch((error) => {
+      if (axios.isAxiosError(error)) {
+        console.log(error.response?.data);
+        console.log(error.message);
+        return error.response?.data;
+      } else {
+        console.log(error);
+      }
+    });
 };

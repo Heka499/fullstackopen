@@ -5,6 +5,7 @@ import Entry from "./components/Entry";
 
 const App = () => {
   const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
+  const [error, setError] = useState("");
   const [date, setDate] = useState("");
   const [visibility, setVisibility] = useState("");
   const [weather, setWeather] = useState("");
@@ -16,10 +17,22 @@ const App = () => {
     });
   }, []);
 
+  const errorTimer = (data: string) => {
+    setError(data);
+    setTimeout(() => {
+      setError("");
+    }, 5000);
+  };
+
   const addDiary = (event: React.SyntheticEvent) => {
     event.preventDefault();
     createDiary({ date, visibility, weather, comment }).then((data) => {
-      setDiaries(diaries.concat(data));
+      if (!data.id) {
+        console.log("data", data);
+        errorTimer(data);
+      } else {
+        setDiaries(diaries.concat(data));
+      }
     });
     setDate("");
     setVisibility("");
@@ -30,6 +43,7 @@ const App = () => {
   return (
     <div>
       <h1>Flight Diaries</h1>
+      {error && <div style={{ color: "red" }}>{error}</div>}
       <form onSubmit={addDiary}>
         <input
           value={date}
